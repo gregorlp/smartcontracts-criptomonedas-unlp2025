@@ -9,16 +9,17 @@ import { useToast } from "@/hooks/use-toast"
 import { CONTRACT_ADDRESS, CONTRACT_ABI, type NewsPreview } from "@/lib/contract-config"
 import { StarRating } from "@/components/star-rating"
 import { FilePreview } from "@/components/file-preview"
-import { Loader2, User, Vote } from "lucide-react"
+import { Loader2, User, Vote, CheckCircle } from "lucide-react"
 
 interface NewsCardProps {
   news: NewsPreview
   showVoting?: boolean
-  myScore?: number
+  myScore?: number // Para "Mis Votaciones" - puntuación que le di
+  myVote?: number // Para "Noticias Generales" - si ya voté esta noticia
   onVoteSuccess?: () => void
 }
 
-export function NewsCard({ news, showVoting = false, myScore, onVoteSuccess }: NewsCardProps) {
+export function NewsCard({ news, showVoting = false, myScore, myVote, onVoteSuccess }: NewsCardProps) {
   const { address, isConnected } = useAccount()
   const { toast } = useToast()
   const [voteScore, setVoteScore] = useState("")
@@ -52,6 +53,15 @@ export function NewsCard({ news, showVoting = false, myScore, onVoteSuccess }: N
       toast({
         title: "Error",
         description: "No puedes votar tu propia noticia",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (hasAlreadyVoted) {
+      toast({
+        title: "Error",
+        description: "Ya has votado esta noticia",
         variant: "destructive",
       })
       return
@@ -94,6 +104,7 @@ export function NewsCard({ news, showVoting = false, myScore, onVoteSuccess }: N
   const isMyNews = address?.toLowerCase() === news.autor.toLowerCase()
   const averageScore = Number(news.promedio)
   const voteCount = Number(news.cantidadVotos)
+  const hasAlreadyVoted = myVote !== undefined // Si myVote existe, ya voté esta noticia
 
   return (
     <Card className="w-full">
@@ -127,6 +138,7 @@ export function NewsCard({ news, showVoting = false, myScore, onVoteSuccess }: N
           </div>
         )}
 
+        {/* Mostrar mi puntuación en "Mis Votaciones" */}
         {myScore && (
           <div className="mb-4 p-3 bg-blue-50 rounded-lg">
             <div className="flex items-center justify-between">
@@ -138,51 +150,82 @@ export function NewsCard({ news, showVoting = false, myScore, onVoteSuccess }: N
           </div>
         )}
 
+        {/* Mostrar que ya voté en "Noticias Generales" */}
+        {hasAlreadyVoted && (
+          <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <div>
+                <p className="text-sm text-green-800 font-medium">✅ Ya votaste esta noticia</p>
+                <p className="text-xs text-green-700">
+                  Tu puntuación: <strong>{myVote}/10</strong>
+                </p>
+              </div>
+              <div className="ml-auto">
+                <StarRating rating={myVote} size="sm" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sección de votación */}
         {showVoting && !isMyNews && (
           <div className="pt-4 border-t">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <label htmlFor={`vote-${news.id}`} className="text-sm font-medium text-gray-700">
-                  Puntuar:
-                </label>
-                <select
-                  id={`vote-${news.id}`}
-                  value={voteScore}
-                  onChange={(e) => setVoteScore(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={isPending || isConfirming}
-                >
-                  <option value="">Selecciona</option>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
-                    <option key={score} value={score}>
-                      {score}/10
-                    </option>
-                  ))}
-                </select>
+            {hasAlreadyVoted ? (
+              // Mostrar estado de "ya votado"
+              <div className="text-center py-3">
+                <p className="text-sm text-gray-600">
+                  Gracias por tu voto. No puedes votar la misma noticia dos veces.
+                </p>
               </div>
-              <Button
-                onClick={handleVote}
-                disabled={!voteScore || isPending || isConfirming}
-                size="sm"
-                className="bg-yellow-600 hover:bg-yellow-700"
-              >
-                {isPending || isConfirming ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Votando...
-                  </>
-                ) : (
-                  <>
-                    <Vote className="w-4 h-4 mr-2" />
-                    Votar
-                  </>
-                )}
-              </Button>
-            </div>
+            ) : (
+              // Mostrar formulario de votación
+              <>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <label htmlFor={`vote-${news.id}`} className="text-sm font-medium text-gray-700">
+                      Puntuar:
+                    </label>
+                    <select
+                      id={`vote-${news.id}`}
+                      value={voteScore}
+                      onChange={(e) => setVoteScore(e.target.value)}
+                      className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      disabled={isPending || isConfirming}
+                    >
+                      <option value="">Selecciona</option>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                        <option key={score} value={score}>
+                          {score}/10
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button
+                    onClick={handleVote}
+                    disabled={!voteScore || isPending || isConfirming}
+                    size="sm"
+                    className="bg-yellow-600 hover:bg-yellow-700"
+                  >
+                    {isPending || isConfirming ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Votando...
+                      </>
+                    ) : (
+                      <>
+                        <Vote className="w-4 h-4 mr-2" />
+                        Votar
+                      </>
+                    )}
+                  </Button>
+                </div>
 
-            <div className="text-xs text-gray-500 mb-2">
-              Vota del 1 al 10 para ayudar a validar esta noticia (10 = más confiable)
-            </div>
+                <div className="text-xs text-gray-500 mb-2">
+                  Vota del 1 al 10 para ayudar a validar esta noticia (10 = más confiable)
+                </div>
+              </>
+            )}
 
             {/* Estado de la votación */}
             {hash && (

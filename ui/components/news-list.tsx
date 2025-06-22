@@ -9,9 +9,10 @@ import { useEffect, useState } from "react"
 import { encodeFunctionData, decodeAbiParameters, parseAbiParameters } from "viem"
 
 export function NewsList() {
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const publicClient = usePublicClient()
   const [previews, setPreviews] = useState<Preview[]>([])
+  const [myVotes, setMyVotes] = useState<{ [newsId: string]: number }>({}) // Map de ID noticia -> puntuación
   const [isLoading, setIsLoading] = useState(false)
 
   // Función para obtener noticias generales usando call manual
@@ -63,11 +64,63 @@ export function NewsList() {
     }
   }
 
+  // Función para obtener mis votaciones y crear el mapa de votos
+  const fetchMyVotes = async () => {
+    if (!publicClient || !address) return
+
+    try {
+      const functionData = encodeFunctionData({
+        abi: CONTRACT_ABI,
+        functionName: "obtenerPreviewsMisVotaciones",
+        args: [],
+      })
+
+      const result = await publicClient.call({
+        to: CONTRACT_ADDRESS,
+        data: functionData,
+        account: address,
+      })
+
+      if (result.data && result.data !== "0x") {
+        const abiTypes = parseAbiParameters(
+          "(uint256,address,string,string,string,uint256,uint256,string)[] previews, uint256[] puntuaciones",
+        )
+        const decoded = decodeAbiParameters(abiTypes, result.data as `0x${string}`)
+
+        if (decoded && decoded[0] && decoded[1]) {
+          const votedPreviews = decoded[0] as any[]
+          const puntuaciones = decoded[1] as any[]
+
+          // Crear mapa de ID noticia -> puntuación
+          const votesMap: { [newsId: string]: number } = {}
+          votedPreviews.forEach((preview, index) => {
+            const newsId = String(preview[0]) // ID está en índice 0
+            const puntuacion = Number(puntuaciones[index])
+            votesMap[newsId] = puntuacion
+          })
+
+          setMyVotes(votesMap)
+        }
+      }
+    } catch (error) {
+      console.error("Error obteniendo mis votos:", error)
+    }
+  }
+
   useEffect(() => {
     if (isConnected && publicClient) {
       fetchNews()
+      if (address) {
+        fetchMyVotes()
+      }
     }
-  }, [isConnected, publicClient])
+  }, [isConnected, publicClient, address])
+
+  const handleVoteSuccess = () => {
+    // Actualizar tanto las noticias como mis votos después de votar
+    fetchNews()
+    fetchMyVotes()
+  }
 
   if (!isConnected) {
     return (
@@ -97,14 +150,25 @@ export function NewsList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Noticias Generales</h3>
-        <Button variant="outline" size="sm" onClick={fetchNews} disabled={isLoading}>
+        <Button variant="outline" size="sm" onClick={() => handleVoteSuccess()} disabled={isLoading}>
           {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "🔄"}
           Actualizar
         </Button>
       </div>
-      {previews.map((preview) => (
-        <NewsCard key={preview.id.toString()} news={preview} showVoting={true} onVoteSuccess={() => fetchNews()} />
-      ))}
+      {previews.map((preview) => {
+        const newsId = preview.id.toString()
+        const myVote = myVotes[newsId] // Puntuación que le di a esta noticia (undefined si no voté)
+
+        return (
+          <NewsCard
+            key={preview.id.toString()}
+            news={preview}
+            showVoting={true}
+            myVote={myVote} // Pasar mi voto si existe
+            onVoteSuccess={handleVoteSuccess}
+          />
+        )
+      })}
     </div>
   )
 }

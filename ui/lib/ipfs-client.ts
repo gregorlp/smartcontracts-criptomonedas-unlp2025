@@ -7,11 +7,12 @@ import { create } from "ipfs-http-client"
 // 4. Crea una nueva API Key con permisos de "pinFileToIPFS"
 // 5. Copia el JWT token
 
-const PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT || "TU_PINATA_JWT"
+// ⚠️ TEMPORAL: Reemplaza con tu JWT token real para probar en producción
+const PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT || "TU_JWT_TOKEN_AQUI"
 
 // Verificar si las credenciales están configuradas
 const areCredentialsConfigured = () => {
-  return PINATA_JWT !== "TU_PINATA_JWT" && PINATA_JWT && PINATA_JWT.length > 0
+  return PINATA_JWT !== "TU_JWT_TOKEN_AQUI" && PINATA_JWT && PINATA_JWT.length > 0
 }
 
 export const ipfsClient = create({
@@ -31,9 +32,9 @@ export async function uploadToIPFS(file: File): Promise<string> {
         "1. Ve a https://pinata.cloud/ y crea una cuenta\n" +
         "2. Ve a 'API Keys' en tu dashboard\n" +
         "3. Crea una nueva API Key con permisos 'pinFileToIPFS'\n" +
-        "4. Agrega tu JWT token en las variables de entorno:\n" +
+        "4. Configura la variable de entorno en Vercel:\n" +
         "   NEXT_PUBLIC_PINATA_JWT=tu_jwt_token\n" +
-        "5. O reemplaza directamente en lib/ipfs-client.ts",
+        "5. Redeploy tu aplicación",
     )
   }
 
@@ -84,7 +85,7 @@ export async function uploadToIPFS(file: File): Promise<string> {
           "1. Tu JWT token sea correcto y válido\n" +
           "2. La API Key tenga permisos 'pinFileToIPFS'\n" +
           "3. Tu cuenta de Pinata esté activa\n" +
-          "4. No hayas excedido los límites de tu plan",
+          "4. La variable de entorno esté configurada en Vercel",
       )
     }
 

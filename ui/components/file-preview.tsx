@@ -15,7 +15,7 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
   const [fileType, setFileType] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>("")
-  const [showPreview, setShowPreview] = useState(false)
+  const [showPreview, setShowPreview] = useState(true) // ✅ Cambiado a true por defecto
   const [fileSize, setFileSize] = useState<string>("")
 
   const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`
@@ -83,10 +83,11 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
           <img
             src={pinataUrl || "/placeholder.svg"}
             alt="Previsualización"
-            className="max-w-full max-h-96 rounded-lg shadow-md"
+            className="max-w-full max-h-96 rounded-lg shadow-md object-contain"
             onError={(e) => {
               e.currentTarget.src = ipfsUrl
             }}
+            loading="lazy"
           />
         </div>
       )
@@ -95,7 +96,12 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
     if (fileType.startsWith("video/")) {
       return (
         <div className="mt-4">
-          <video controls className="max-w-full max-h-96 rounded-lg shadow-md" preload="metadata">
+          <video
+            controls
+            className="max-w-full max-h-96 rounded-lg shadow-md"
+            preload="metadata"
+            poster="/placeholder.svg?height=200&width=400&text=Video"
+          >
             <source src={pinataUrl} type={fileType} />
             <source src={ipfsUrl} type={fileType} />
             Tu navegador no soporta la reproducción de video.
@@ -106,7 +112,14 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
 
     if (fileType.startsWith("audio/")) {
       return (
-        <div className="mt-4">
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 mb-3">
+            <Music className="w-8 h-8 text-blue-600" />
+            <div>
+              <p className="font-medium">{fileName || "Audio"}</p>
+              <p className="text-sm text-gray-500">{getFileTypeLabel()}</p>
+            </div>
+          </div>
           <audio controls className="w-full">
             <source src={pinataUrl} type={fileType} />
             <source src={ipfsUrl} type={fileType} />
@@ -120,9 +133,10 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
       return (
         <div className="mt-4">
           <iframe
-            src={`${pinataUrl}#toolbar=0`}
+            src={`${pinataUrl}#toolbar=0&navpanes=0&scrollbar=0`}
             className="w-full h-96 rounded-lg border"
             title="Previsualización PDF"
+            loading="lazy"
           />
         </div>
       )
@@ -135,6 +149,7 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
             src={pinataUrl}
             className="w-full h-64 rounded-lg border bg-white p-4"
             title="Previsualización de texto"
+            loading="lazy"
           />
         </div>
       )
@@ -161,9 +176,14 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
 
           <div className="flex gap-2">
             {canPreview() && (
-              <Button variant="outline" size="sm" onClick={() => setShowPreview(!showPreview)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+                className={showPreview ? "bg-blue-50 border-blue-200" : ""}
+              >
                 {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                {showPreview ? "Ocultar" : "Vista previa"}
+                {showPreview ? "Ocultar" : "Mostrar"}
               </Button>
             )}
 
@@ -189,31 +209,38 @@ export function FilePreview({ ipfsHash, fileName, className = "" }: FilePreviewP
 
         {error && <div className="text-red-600 text-xs mb-2">{error}</div>}
 
+        {/* ✅ Vista previa cargada por defecto */}
         {renderPreview()}
 
-        <div className="mt-3 pt-3 border-t">
-          <p className="text-xs text-gray-500">
-            <strong>IPFS Hash:</strong> {ipfsHash}
-          </p>
-          <div className="flex gap-2 mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-6 px-2"
-              onClick={() => window.open(`https://ipfs.io/ipfs/${ipfsHash}`, "_blank")}
-            >
-              IPFS.io
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-6 px-2"
-              onClick={() => window.open(`https://gateway.pinata.cloud/ipfs/${ipfsHash}`, "_blank")}
-            >
-              Pinata
-            </Button>
+        {/* Información IPFS colapsada por defecto */}
+        <details className="mt-3 pt-3 border-t">
+          <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+            <strong>Información IPFS</strong> (click para expandir)
+          </summary>
+          <div className="mt-2 space-y-2">
+            <p className="text-xs text-gray-500">
+              <strong>Hash:</strong> {ipfsHash}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-6 px-2"
+                onClick={() => window.open(`https://ipfs.io/ipfs/${ipfsHash}`, "_blank")}
+              >
+                IPFS.io
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-6 px-2"
+                onClick={() => window.open(`https://gateway.pinata.cloud/ipfs/${ipfsHash}`, "_blank")}
+              >
+                Pinata
+              </Button>
+            </div>
           </div>
-        </div>
+        </details>
       </CardContent>
     </Card>
   )
