@@ -1,0 +1,441 @@
+  {
+    "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "autor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "titulo",
+          "type": "string"
+        }
+      ],
+      "name": "NoticiaPublicada",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "validador",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "puntuacion",
+          "type": "uint256"
+        }
+      ],
+      "name": "VotoEmitido",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "noticiasGenerales",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "noticiasPorAutor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "obtenerPreviewNoticia",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "autor",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "titulo",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "descripcion",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "categoria",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "promedio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cantidadVotos",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "hashContenido",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct VerificadorNoticias.Preview",
+          "name": "p",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "obtenerPreviewsMisNoticias",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "autor",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "titulo",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "descripcion",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "categoria",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "promedio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cantidadVotos",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "hashContenido",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct VerificadorNoticias.Preview[]",
+          "name": "previews",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "obtenerPreviewsMisVotaciones",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "autor",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "titulo",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "descripcion",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "categoria",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "promedio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cantidadVotos",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "hashContenido",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct VerificadorNoticias.Preview[]",
+          "name": "previews",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "puntuaciones",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "obtenerPreviewsNoticiasGenerales",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "autor",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "titulo",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "descripcion",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "categoria",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "promedio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cantidadVotos",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "hashContenido",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct VerificadorNoticias.Preview[]",
+          "name": "previews",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "titulo",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "descripcion",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "categoria",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "hashContenido",
+          "type": "string"
+        }
+      ],
+      "name": "publicarNoticia",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalNoticias",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "puntuacion",
+          "type": "uint256"
+        }
+      ],
+      "name": "validarNoticia",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "votosDetalle",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "votosRealizados",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "newsvalidator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "verify": "npx hardhat verify --network sepolia",
+    "clean": "npx hardhat clean"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.10.0",
+    "hardhat": "^2.24.3"
+  }
+}
